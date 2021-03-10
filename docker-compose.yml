@@ -1,0 +1,27 @@
+version: "2.4"
+services:
+  config:
+    extends:
+      file: docker/common.yml
+      service: config
+  postgres:
+    extends:
+      file: docker/common.yml
+      service: postgres
+  backend:
+    build: .
+    volumes:
+      - ./config:/app/config
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_started
+      config:
+        condition: service_healthy
+    restart: always
+volumes:
+  postgres_data: {}
+  config_output: {}
